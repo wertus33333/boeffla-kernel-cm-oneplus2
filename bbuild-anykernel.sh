@@ -10,7 +10,7 @@
 # Parameters to be configured manually
 #######################################
 
-BOEFFLA_VERSION="1.0-test-CM14.0-OnePlus2"
+BOEFFLA_VERSION="6.1-unofficial-CAF-OnePlus2"
 
 TOOLCHAIN="/home/mm/aosip/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 ARCHITECTURE=arm64
