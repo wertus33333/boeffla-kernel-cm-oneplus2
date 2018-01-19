@@ -122,8 +122,8 @@ struct test_header {
 #define DouTap              1   // double tap
 #define UpVee               2   // V
 #define DownVee             3   // ^
-#define LeftVee             4   // >
-#define RightVee            5   // <
+#define RightVee            4   // >
+#define LeftVee             5   // <
 #define Circle              6   // O
 #define DouSwip             7   // ||
 #define Left2RightSwip      8   // -->
@@ -1163,8 +1163,8 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 		case VEE_DETECT:
 			gesture = (gesture_buffer[2] == 0x01) ? DownVee  :
 				(gesture_buffer[2] == 0x02) ? UpVee    :
-				(gesture_buffer[2] == 0x04) ? RightVee :
-				(gesture_buffer[2] == 0x08) ? LeftVee  :
+				(gesture_buffer[2] == 0x04) ? LeftVee :
+				(gesture_buffer[2] == 0x08) ? RightVee  :
 				UnkownGestrue;
 			break;
 		case UNICODE_DETECT:
@@ -1188,10 +1188,10 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 		case DownVee:
 			keyCode = KEY_GESTURE_UP_ARROW;
 			break;
-		case LeftVee:
+		case RightVee:
 			keyCode = KEY_GESTURE_RIGHT_V;
 			break;
-		case RightVee:
+		case LeftVee:
 			keyCode = KEY_GESTURE_LEFT_V;
 			break;
 		case Circle:
@@ -1209,8 +1209,8 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	TPD_DEBUG("detect %s gesture\n", gesture == DouTap ? "double tap" :
 			gesture == UpVee ? "(V)" :
 			gesture == DownVee ? "(^)" :
-			gesture == LeftVee ? "(>)" :
-			gesture == RightVee ? "(<)" :
+			gesture == RightVee ? "(>)" :
+			gesture == LeftVee ? "(<)" :
 			gesture == Circle ? "(O)" :
 			gesture == DouSwip ? "(||)" :
 			gesture == Left2RightSwip ? "(-->)" :
@@ -1459,8 +1459,8 @@ static ssize_t tp_gesture_write_func(struct file *file, const char __user *buffe
     UpVee_gesture = (buf[0] & BIT0)?1:0; //"V"
     DouSwip_gesture = (buf[0] & BIT1)?1:0;//"||"
     DownVee_gesture = (buf[0] & BIT2)?1:0; //"^"
-    LeftVee_gesture = (buf[0] & BIT3)?1:0; //">"
-    RightVee_gesture = (buf[0] & BIT4)?1:0;//"<"
+    RightVee_gesture = (buf[0] & BIT3)?1:0; //">"
+    LeftVee_gesture = (buf[0] & BIT4)?1:0;//"<"
     Circle_gesture = (buf[0] & BIT6)?1:0; //"O"
     DouTap_gesture = (buf[0] & BIT7)?1:0; //double tap
 
