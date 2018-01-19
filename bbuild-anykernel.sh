@@ -12,7 +12,7 @@
 
 BOEFFLA_VERSION="6.1-unofficial-CAF-OnePlus2"
 
-TOOLCHAIN="/home/mm/aosip/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+TOOLCHAIN="/home/mm/toolchain/uber/aarch64-linux-android-8.x/bin/aarch64-linux-android-"
 ARCHITECTURE=arm64
 COMPILER_FLAGS_KERNEL="-Wno-maybe-uninitialized"
 COMPILER_FLAGS_MODULE="-Wno-maybe-uninitialized"
