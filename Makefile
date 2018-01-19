@@ -239,10 +239,12 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
 	  else echo sh; fi ; fi)
 
+GRAPHITE = -fgraphite -fgraphite-identity -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block -ftree-loop-linear
+
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu89
-HOSTCXXFLAGS = -O2
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer -std=gnu89 $(GRAPHITE)
+HOSTCXXFLAGS = -Ofast $(GRAPHITE)
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -353,6 +355,17 @@ CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
+# fall back to -march=armv8-a in case the compiler isn't compatible 
+# with -mcpu and -mtune
+ARM_ARCH_OPT := -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53
+GEN_OPT_FLAGS := $(call cc-option,$(ARM_ARCH_OPT),-march=armv8-a) \
+ -g0 \
+ -DNDEBUG \
+ -fomit-frame-pointer \
+ -fmodulo-sched \
+ -fmodulo-sched-allow-regmoves \
+ -fivopts \
+ -Wno-array-bounds
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -373,20 +386,18 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks \
-		   -std=gnu89
-
-KBUILD_CFLAGS   += -mcpu=cortex-a57.cortex-a53
-
-KBUILD_AFLAGS_KERNEL :=
-KBUILD_CFLAGS_KERNEL :=
+KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Wno-misleading-indentation -Wno-bool-operation \
+		   -fno-strict-aliasing -fno-common -Wno-bool-compare -Wno-unused-const-variable -Wno-nonnull -Wno-switch-unreachable \
+		   -Werror-implicit-function-declaration -Wno-logical-not-parentheses -Wno-format-truncation -Wno-format-overflow \
+		   -Wno-format-security -Wno-memset-transposed-args -Wno-switch-bool -Wno-duplicate-decl-specifier \
+		   -fno-delete-null-pointer-checks -Wno-maybe-uninitialized -Wno-memset-elt-size -Wno-int-in-bool-context \
+		   -std=gnu89 -Wno-packed-not-aligned \
+		   $(GEN_OPT_FLAGS)
+KBUILD_AFLAGS_KERNEL := $(GEN_OPT_FLAGS)
+KBUILD_CFLAGS_KERNEL := $(GEN_OPT_FLAGS)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_AFLAGS_MODULE  := -DMODULE
-KBUILD_CFLAGS_MODULE  := -DMODULE
+KBUILD_AFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
+KBUILD_CFLAGS_MODULE  := -DMODULE $(GEN_OPT_FLAGS)
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 #ifdef VENDOR_EDIT
@@ -590,7 +601,7 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS	+= -Ofast -fno-store-merging
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
