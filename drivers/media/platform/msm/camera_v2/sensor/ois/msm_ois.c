@@ -323,8 +323,9 @@ static int32_t msm_ois_config(struct msm_ois_ctrl_t *o_ctrl,
 			rc = -EFAULT;
 			break;
 		}
-#endif /*VENDOR_EDIT*/
-		if (!conf_array.size) {
+ #endif /*VENDOR_EDIT*/
+		if (!conf_array.size ||
+			conf_array.size > I2C_SEQ_REG_DATA_MAX) {
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
@@ -451,11 +452,13 @@ static long msm_ois_subdev_ioctl(struct v4l2_subdev *sd,
 			pr_err("o_ctrl->i2c_client.i2c_func_tbl NULL\n");
 			return -EINVAL;
 		} else {
+			mutex_lock(o_ctrl->ois_mutex);
 			rc = msm_ois_power_down(o_ctrl);
 			if (rc < 0) {
 				pr_err("%s:%d OIS Power down failed\n",
 					__func__, __LINE__);
 			}
+			mutex_unlock(o_ctrl->ois_mutex);
 			return msm_ois_close(sd, NULL);
 		}
 	default:
