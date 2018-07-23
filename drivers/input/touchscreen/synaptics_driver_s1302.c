@@ -57,6 +57,7 @@
 #include "synaptics_s1302_redremote.h"
 #include <linux/boot_mode.h>
 #include <linux/project_info.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
 #include <linux/boeffla_touchkey_control.h>
@@ -64,6 +65,8 @@
 
 #include <linux/moduleparam.h>
 
+=======
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 /*------------------------------------------------Global Define--------------------------------------------*/
 #define TP_TEST_ENABLE 1
 #define SYNAPTICS_NAME "synaptics"
@@ -87,10 +90,13 @@
 		pr_err(LOG_TAG ": " a,##arg);\
 	}while(0)
 
+<<<<<<< HEAD
 // module parameter
 bool no_buttons_during_touch = 1;
 module_param(no_buttons_during_touch, bool, 0644);
 
+=======
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 /*---------------------------------------------Global Variable----------------------------------------------*/
  static unsigned int tp_debug = 0;
 static int force_update = 0;
@@ -764,9 +770,12 @@ static void synaptics_ts_report(struct synaptics_ts_data *ts )
         //goto END;
     }
     if( inte & 0x10) {
+<<<<<<< HEAD
 #ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
 		btkc_touch_button();
 #endif
+=======
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 #ifdef VENDOR_EDIT //WayneChang, 2015/12/29, add flag to enable virtual key
 	if(!virtual_key_enable){
 		if (!ts->stop_keypad)
@@ -1531,10 +1540,14 @@ bool s1302_is_keypad_stopped(void)
 {
 	struct synaptics_ts_data *ts = tc_g;
 
+<<<<<<< HEAD
 	if (no_buttons_during_touch)
 		return ts ? ts->stop_keypad : false;
 
 	return false;
+=======
+	return ts ? ts->stop_keypad : false;
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 }
 
 static void synaptics_input_event(struct input_handle *handle,
@@ -1545,11 +1558,16 @@ static void synaptics_input_event(struct input_handle *handle,
 	if (code != BTN_TOOL_FINGER)
 		return;
 
+<<<<<<< HEAD
 	if (no_buttons_during_touch)
 		/* Disable capacitive keys when user's finger is on touchscreen */
 		ts->stop_keypad = value;
 	else
 		ts->stop_keypad = false;
+=======
+	/* Disable capacitive keys when user's finger is on touchscreen */
+	ts->stop_keypad = value;
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 }
 
 static int synaptics_input_connect(struct input_handler *handler,

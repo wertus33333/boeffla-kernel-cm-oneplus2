@@ -142,6 +142,7 @@ struct cpu_dbs_common_info {
 	 * first wake-up from idle.
 	 */
 	bool copy_prev_load;
+
 	struct cpufreq_policy *cur_policy;
 	struct delayed_work work;
 	/*

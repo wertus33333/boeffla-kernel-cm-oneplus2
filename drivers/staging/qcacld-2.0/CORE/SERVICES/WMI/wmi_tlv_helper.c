@@ -527,8 +527,13 @@ wmitlv_check_and_pad_tlvs(
             }
 
             /* Warning: Needs to allocate a larger structure and pad with zeros */
+<<<<<<< HEAD
 //            wmi_tlv_print_verbose("%s: WARN: TLV array of structures needs padding. tlv_size_diff=%d\n",
 //                   __func__, tlv_size_diff);
+=======
+            wmi_tlv_print_verbose("%s: WARN: TLV array of structures needs padding. tlv_size_diff=%d\n",
+                   __func__, tlv_size_diff);
+>>>>>>> 165899d6a79e7e8d780b6085573b51e82ce3e48a
 
             /* incoming structure length */
             in_tlv_len = WMITLV_GET_TLVLEN(WMITLV_GET_HDR(buf_ptr)) + WMI_TLV_HDR_SIZE;
