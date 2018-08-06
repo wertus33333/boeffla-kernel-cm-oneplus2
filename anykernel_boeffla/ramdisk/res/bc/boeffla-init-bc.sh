@@ -3,7 +3,7 @@
 # *******************************
 # BC-based initialization
 #
-# Oneplus 2 Lineage14 version
+# Oneplus 2 slim6 version
 #
 # V0.1
 # *******************************
