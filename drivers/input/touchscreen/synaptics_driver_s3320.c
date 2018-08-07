@@ -47,10 +47,6 @@
 #include <linux/timer.h>
 #include <linux/time.h>
 
-#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
-#include <linux/boeffla_touchkey_control.h>
-#endif
-
 #ifdef CONFIG_FB
 #include <linux/fb.h>
 #include <linux/notifier.h>
@@ -1297,12 +1293,57 @@ void int_touch(void)
 		points.raw_y = buf[i*8+7] & 0x0f;
 		points.z = buf[i*8+5];
 		finger_info <<= 1;
+#ifdef VENDOR_EDIT //WayneChang, 2015/12/02, add for key to abs, simulate key in abs through virtual key system  
+		if(virtual_key_enable){
+			if(points.y > 0x770 && key_pressed){
+					TPD_DEBUG("Drop TP event due to key pressed\n");
+					finger_status = 0;
+			}else{
+				finger_status =  points.status & 0x03;
+			}
+		}else{
 	        finger_status =  points.status & 0x03;
+		}
+#endif
+
+#ifdef VENDOR_EDIT //WayneChang, 2015/12/02, add for key to abs, simulate key in abs through virtual key system 
+		if(virtual_key_enable){
+                if (!finger_status){
+                    if (key_appselect_pressed && !key_appselect_check){
+                        points.x = 0xb4;
+                        points.y = 0x7e2;
+                        points.z = 0x33;
+                        points.raw_x = 4;
+                        points.raw_y = 6;
+		        key_appselect_check = true;
+                        points.status = 1;
+                        finger_status =  points.status & 0x03;
+                    }else if (key_back_pressed && !key_back_check){
+                        points.x = 0x384;
+                        points.y = 0x7e2;
+                        points.z = 0x33;
+                        points.raw_x = 4;
+                        points.raw_y = 6;
+		        key_back_check = true;
+                        points.status = 1;
+                        finger_status =  points.status & 0x03;
+                    }else if(key_home_pressed && !key_home_check){
+                        points.x = 0x21c;
+                        points.y = 0x7e2;
+                        points.z = 0x33;
+                        points.raw_x = 4;
+                        points.raw_y = 6;
+		        key_home_check = true;
+                        points.status = 1;
+                        finger_status =  points.status & 0x03;               
+	            }else{
+                        //TPD_DEBUG(" finger %d with !finger_statue and no key match\n",i);
+                    }
+                }
+		}
+#endif
 
 		if (finger_status) {
-#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
-			btkc_touch_start();
-#endif
 			input_mt_slot(ts->input_dev, i);
 			input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, finger_status);
 			input_report_key(ts->input_dev, BTN_TOUCH, 1);
@@ -1315,6 +1356,11 @@ void int_touch(void)
 			//#endif
 #ifndef TYPE_B_PROTOCOL
 			input_mt_sync(ts->input_dev);
+#endif
+#ifdef VENDOR_EDIT //WayneChang, 2015/12/02, add for key to abs, simulate key in abs through virtual key system 
+			if(virtual_key_enable){
+                complete(&key_cm);
+			}
 #endif
 			finger_num++;
 			finger_info |= 1 ;
@@ -1338,9 +1384,8 @@ void int_touch(void)
 	if (finger_num == 0)
 	{
 		input_report_key(ts->input_dev,BTN_TOUCH, 0);
-#ifdef CONFIG_BOEFFLA_TOUCH_KEY_CONTROL
-			btkc_touch_stop();
-#endif
+        if (3 == (++prlog_count % 6))
+            TPD_ERR("all finger up\n");
 		input_report_key(ts->input_dev, BTN_TOOL_FINGER, 0);
 #ifndef TYPE_B_PROTOCOL
 		input_mt_sync(ts->input_dev);
